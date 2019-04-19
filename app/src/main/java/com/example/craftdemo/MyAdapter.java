@@ -3,10 +3,12 @@ package com.example.craftdemo;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        JSONObject obj = mDataset.get(position);
+        final JSONObject obj = mDataset.get(position);
         String name = "Error";
         String description = "Error";
         try {
@@ -64,6 +66,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
         ((TextView)holder.linearLayout.findViewById(R.id.list_item_name)).setText(name);
         ((TextView)holder.linearLayout.findViewById(R.id.list_item_description)).setText(description);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Do Intent for new Activity with "obj" as the data passed through
+            }
+        });
     }
 
     @Override
