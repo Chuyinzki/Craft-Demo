@@ -1,6 +1,8 @@
 package com.example.craftdemo.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -47,29 +49,36 @@ public class MainActivity extends AppCompatActivity {
 
         getNewData(this);
 
-        //TODO: Disable rotation of app
-        //TODO: Add pull down to refresh
-        //TODO: Add logic to parse json into objects (Can stay as JSON objects if possible)
-        //TODO: Add RecyclerView to display the repositories
-        //TODO: Add Text to show if no objects were retrieved/or there was an error to try again.
-        //TODO: Objects will all be gathered here and passed to other activities through intents for them to display.
+        final SwipeRefreshLayout refreshLayout = findViewById(R.id.swipe_to_refresh);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getNewData(refreshLayout.getContext());
+                refreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void getNewData(final Context context) {
-        //TODO: Show spinner and clear data/redraw to avoid clicking stale data
+        recyclerView.setAdapter(null);
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest
                 (Request.Method.GET, INTUIT_REPOS_URL, null, new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         mAdapter = new MyAdapter(context, response);
                         recyclerView.setAdapter(mAdapter);
-                        //TODO: Clear the spinner
+                        progressDialog.dismiss();
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         System.out.println();
-                        // TODO: Clear the spinner and add text to ask user to try again. Consider toast as well.
+                        progressDialog.dismiss();
+                        // TODO: add text to ask user to try again. Consider toast as well.
                     }
                 });
         SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);

@@ -68,7 +68,8 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                     });
                 } else {
                     Log.e(RepositoryDetailActivity.class.getSimpleName(),
-                            "JSON Array object or unexpected item found in JSON. Skipping:\n" + pair.second.toString());
+                            "JSON Array object or unexpected item found in JSON. Skipping:\n"
+                                    + pair.second.toString());
                 }
                 layout.addView(view);
             }
