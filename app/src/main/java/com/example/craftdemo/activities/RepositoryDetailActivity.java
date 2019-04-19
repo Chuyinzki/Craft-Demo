@@ -17,6 +17,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import static com.example.craftdemo.Util.getAllInfoFromJSON;
@@ -47,7 +50,7 @@ public class RepositoryDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.repository_detail);
         //Initialize all the views
-        ((TextView) findViewById(R.id.repository_name_tv)).setText(getIntent().getStringExtra(OBJECT_TITLE));
+        setTitle(getIntent().getStringExtra(OBJECT_TITLE));
 
         LinearLayout layout = findViewById(R.id.repository_layout);
         try {
@@ -77,24 +80,32 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                 }
                 layout.addView(view);
 
-                if (pair.first.equals("issues_url")) {
+                final String urlEnding = "_url";
+                final String githubAPIHost = "api.github.com";
+                if (pair.first.endsWith(urlEnding)) {
+                    String rawUrl = pair.second.toString();
+                    final String url = rawUrl.contains("{") ? rawUrl.substring(0, rawUrl.indexOf('{')) : rawUrl;
+                    try {
+                        URI uri = new URI(url);
+                        if(uri.getHost() == null || !uri.getHost().equals(githubAPIHost)) {
+                            continue;
+                        }
+                    } catch (URISyntaxException e) {
+                        Log.e(RepositoryDetailActivity.class.getSimpleName(), "Could not parse URI, skipping.");
+                        continue;
+                    }
+
                     View view2 = getLayoutInflater().inflate(R.layout.property_item, null);
-                    ((TextView) view2.findViewById(R.id.list_item_name)).setText("Issues");
+                    ((TextView) view2.findViewById(R.id.list_item_name)).setText(
+                            pair.first.substring(0, pair.first.indexOf(urlEnding)));
                     TextView itemDescription2 = view2.findViewById(R.id.list_item_description);
                     itemDescription2.setText("Click for more info");
                     view2.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View v) {
-                            final ProgressDialog progressDialog = new ProgressDialog(v.getContext());
-                            progressDialog.setMessage("Loading...");
-                            progressDialog.show();
-                            String url = ((String) pair.second);
-                            url = url.contains("{") ? url.substring(0, url.indexOf('{')) : url;
-
-                            progressDialog.dismiss();
                             Intent i = new Intent(v.getContext(), MainActivity.class);
                             i.putExtra(OBJECT_URL_FOR_DATA, url);
-                            i.putExtra(OBJECT_URL_FOR_KEY, "title");
+                            i.putExtra(OBJECT_URL_FOR_KEY, pair.first.equals("issues_url") ? "title" : "id"); //"title" to make issues pretty
                             i.putExtra(OBJECT_URL_FOR_DESC, "url");
                             v.getContext().startActivity(i);
                         }
@@ -108,8 +119,5 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                     "Error occurred getting and populating JSON property data.");
             finish();
         }
-
-
     }
-
 }

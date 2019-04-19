@@ -13,7 +13,9 @@ public class MainActivity extends AbstractRecyclerActivity {
     public final static String OBJECT_URL_FOR_DATA = "OBJECT_URL_FOR_DATA";
     public final static String OBJECT_URL_FOR_KEY = "OBJECT_URL_FOR_KEY";
     public final static String OBJECT_URL_FOR_DESC = "OBJECT_URL_FOR_DESC";
+    public final static String OBJECT_TITLE_TO_SET = "OBJECT_TITLE_TO_SET";
 
+    final String DEFAULT_TITLE = "Intuit Repositories";
     final String INTUIT_REPOS_URL = "https://api.github.com/users/intuit/repos";
     final String GITHUB_API_NAME = "name";
     final String GITHUB_API_DESCRIPTION = "description";
@@ -25,6 +27,8 @@ public class MainActivity extends AbstractRecyclerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getIntent().hasExtra(OBJECT_TITLE_TO_SET) ?
+                getIntent().getStringExtra(OBJECT_TITLE_TO_SET) : DEFAULT_TITLE);
         urlForData = getIntent().hasExtra(OBJECT_URL_FOR_DATA) ?
                 getIntent().getStringExtra(OBJECT_URL_FOR_DATA) : INTUIT_REPOS_URL;
         nameKey = getIntent().hasExtra(OBJECT_URL_FOR_KEY) ?
