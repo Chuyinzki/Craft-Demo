@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         getNewData();
-        recyclerView.setAdapter(mAdapter);
-
 
         //TODO: Disable rotation of app
         //TODO: Add pull down to refresh
@@ -54,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                         mAdapter = new MyAdapter(response);
+                        recyclerView.setAdapter(mAdapter);
                         //TODO: Clear the spinner
                     }
                 }, new Response.ErrorListener() {
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                         // TODO: Clear the spinner and add text to ask user to try again. Consider toast as well.
                     }
                 });
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(jsonObjectRequest);
+        SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 }

@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -20,10 +22,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<JSONObject> mDataset;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public MyViewHolder(TextView v) {
+        public LinearLayout linearLayout;
+        public MyViewHolder(LinearLayout v) {
             super(v);
-            textView = v;
+            linearLayout = v;
         }
     }
 
@@ -43,9 +45,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
-        TextView v = (TextView) LayoutInflater.from(parent.getContext())
+        LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.repository_item, parent, false);
-//        ...
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
     }
@@ -53,14 +54,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         JSONObject obj = mDataset.get(position);
-        String basicText = "Error";
+        String name = "Error";
+        String description = "Error";
         try {
-            basicText = obj.getString(GITHUB_API_NAME) + ": " + obj.getString(GITHUB_API_DESCRIPTION);
+            name = obj.getString(GITHUB_API_NAME);
+            description = obj.getString(GITHUB_API_DESCRIPTION);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        holder.textView.setText(basicText);
-
+        ((TextView)holder.linearLayout.findViewById(R.id.list_item_name)).setText(name);
+        ((TextView)holder.linearLayout.findViewById(R.id.list_item_description)).setText(description);
     }
 
     @Override
