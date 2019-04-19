@@ -1,14 +1,16 @@
 package com.example.craftdemo;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.craftdemo.activities.RepositoryDetailActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,21 +19,24 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.craftdemo.Constants.GITHUB_API_DESCRIPTION;
-import static com.example.craftdemo.Constants.GITHUB_API_NAME;
+import static com.example.craftdemo.Util.getNameAndDescriptionFromJSON;
+import static com.example.craftdemo.activities.RepositoryDetailActivity.OBJECT_INFO;
+import static com.example.craftdemo.activities.RepositoryDetailActivity.OBJECT_TITLE;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<JSONObject> mDataset;
+    private Context context;
 
+    //TODO: Make items look like buttons
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout linearLayout;
-        public MyViewHolder(LinearLayout v) {
+        public View linearLayout;
+        public MyViewHolder(View v) {
             super(v);
             linearLayout = v;
         }
     }
 
-    public MyAdapter(JSONArray myDataset) {
+    public MyAdapter(Context context, JSONArray myDataset) {
         List<JSONObject> toAdd = new ArrayList<>();
         for(int i = 0; i < myDataset.length(); i++) {
             try {
@@ -42,12 +47,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         }
         mDataset = toAdd;
+        this.context = context;
     }
 
     @Override
     public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
-        LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.repository_item, parent, false);
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
@@ -56,21 +62,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final JSONObject obj = mDataset.get(position);
-        String name = "Error";
-        String description = "Error";
-        try {
-            name = obj.getString(GITHUB_API_NAME);
-            description = obj.getString(GITHUB_API_DESCRIPTION);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ((TextView)holder.linearLayout.findViewById(R.id.list_item_name)).setText(name);
-        ((TextView)holder.linearLayout.findViewById(R.id.list_item_description)).setText(description);
+        final Pair<String,String> nameAndDesc = getNameAndDescriptionFromJSON(obj);
+        ((TextView)holder.linearLayout.findViewById(R.id.list_item_name)).setText(nameAndDesc.first);
+        ((TextView)holder.linearLayout.findViewById(R.id.list_item_description)).setText(nameAndDesc.second);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Do Intent for new Activity with "obj" as the data passed through
+                Intent i = new Intent(context, RepositoryDetailActivity.class);
+                i.putExtra(OBJECT_INFO, obj.toString());
+                i.putExtra(OBJECT_TITLE, nameAndDesc.first);
+                context.startActivity(i);
             }
         });
     }

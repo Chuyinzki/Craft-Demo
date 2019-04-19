@@ -1,7 +1,9 @@
-package com.example.craftdemo;
+package com.example.craftdemo.activities;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +17,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.craftdemo.MyAdapter;
+import com.example.craftdemo.R;
+import com.example.craftdemo.SingletonRequestQueue;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,7 +40,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        getNewData();
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        getNewData(this);
 
         //TODO: Disable rotation of app
         //TODO: Add pull down to refresh
@@ -45,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
         //TODO: Objects will all be gathered here and passed to other activities through intents for them to display.
     }
 
-    private void getNewData() {
+    private void getNewData(final Context context) {
         //TODO: Show spinner and clear data/redraw to avoid clicking stale data
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest
                 (Request.Method.GET, INTUIT_REPOS_URL, null, new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        mAdapter = new MyAdapter(response);
+                        mAdapter = new MyAdapter(context, response);
                         recyclerView.setAdapter(mAdapter);
                         //TODO: Clear the spinner
                     }
