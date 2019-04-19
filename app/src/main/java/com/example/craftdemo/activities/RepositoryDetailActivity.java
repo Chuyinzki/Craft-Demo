@@ -10,15 +10,8 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.example.craftdemo.MyAdapter;
 import com.example.craftdemo.R;
-import com.example.craftdemo.SingletonRequestQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
