@@ -24,7 +24,6 @@ import org.json.JSONArray;
 public abstract class AbstractRecyclerActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private SwipeRefreshLayout refreshLayout;
 
     @Override
@@ -34,8 +33,7 @@ public abstract class AbstractRecyclerActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
@@ -71,7 +69,8 @@ public abstract class AbstractRecyclerActivity extends AppCompatActivity {
                         recyclerView.setAdapter(getAdapter(context, null));
                         progressDialog.dismiss();
                         Toast.makeText(context, "There was a problem getting the information. " +
-                                "Please check your internet connection and try again.", Toast.LENGTH_LONG).show();
+                                "Section might require authentication or check your internet and try again."
+                                , Toast.LENGTH_LONG).show();
                     }
                 });
         SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);

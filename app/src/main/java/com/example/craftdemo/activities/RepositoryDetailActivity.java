@@ -1,6 +1,5 @@
 package com.example.craftdemo.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,7 +18,6 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.List;
 
 import static com.example.craftdemo.Util.getAllInfoFromJSON;
@@ -63,8 +61,7 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                 if (!(pair.second instanceof JSONObject) && !(pair.second instanceof JSONArray)) {
                     itemDescription.setText(String.valueOf(pair.second));
                 } else if (pair.second instanceof JSONObject) {
-                    //TODO: Move to Strings file
-                    itemDescription.setText("Click for more info");
+                    itemDescription.setText(R.string.click_more_info);
                     view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -100,7 +97,7 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                     View view2 = getLayoutInflater().inflate(R.layout.property_item, null);
                     ((TextView) view2.findViewById(R.id.list_item_name)).setText(title);
                     TextView itemDescription2 = view2.findViewById(R.id.list_item_description);
-                    itemDescription2.setText("Click for more info");
+                    itemDescription2.setText(R.string.click_more_info);
                     view2.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View v) {
