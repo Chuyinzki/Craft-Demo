@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Craft Demo</string>
     <string name="click_more_info">Click for more info</string>
+    <string name="no_data_available">No data to see here</string>
 </resources>

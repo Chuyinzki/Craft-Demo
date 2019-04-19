@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -24,6 +26,7 @@ import org.json.JSONArray;
 public abstract class AbstractRecyclerActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private TextView emptyView;
     private SwipeRefreshLayout refreshLayout;
 
     @Override
@@ -47,7 +50,7 @@ public abstract class AbstractRecyclerActivity extends AppCompatActivity {
                 refreshLayout.setRefreshing(false);
             }
         });
-
+        emptyView = findViewById(R.id.empty_view);
     }
 
     protected void getNewData(final Context context, String url) {
@@ -61,12 +64,18 @@ public abstract class AbstractRecyclerActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                         recyclerView.setAdapter(getAdapter(context, response));
+                        if(recyclerView.getAdapter().getItemCount() == 0) {
+                            emptyView.setVisibility(View.VISIBLE);
+                        } else {
+                            emptyView.setVisibility(View.GONE);
+                        }
                         progressDialog.dismiss();
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         recyclerView.setAdapter(getAdapter(context, null));
+                        emptyView.setVisibility(View.VISIBLE);
                         progressDialog.dismiss();
                         Toast.makeText(context, "There was a problem getting the information. " +
                                 "Section might require authentication or check your internet and try again."
