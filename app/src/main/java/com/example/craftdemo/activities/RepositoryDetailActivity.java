@@ -23,6 +23,7 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import static com.example.craftdemo.Util.getAllInfoFromJSON;
+import static com.example.craftdemo.activities.MainActivity.OBJECT_TITLE_TO_SET;
 import static com.example.craftdemo.activities.MainActivity.OBJECT_URL_FOR_DATA;
 import static com.example.craftdemo.activities.MainActivity.OBJECT_URL_FOR_DESC;
 import static com.example.craftdemo.activities.MainActivity.OBJECT_URL_FOR_KEY;
@@ -95,9 +96,9 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                         continue;
                     }
 
+                    final String title = pair.first.substring(0, pair.first.indexOf(urlEnding));
                     View view2 = getLayoutInflater().inflate(R.layout.property_item, null);
-                    ((TextView) view2.findViewById(R.id.list_item_name)).setText(
-                            pair.first.substring(0, pair.first.indexOf(urlEnding)));
+                    ((TextView) view2.findViewById(R.id.list_item_name)).setText(title);
                     TextView itemDescription2 = view2.findViewById(R.id.list_item_description);
                     itemDescription2.setText("Click for more info");
                     view2.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +108,7 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                             i.putExtra(OBJECT_URL_FOR_DATA, url);
                             i.putExtra(OBJECT_URL_FOR_KEY, pair.first.equals("issues_url") ? "title" : "id"); //"title" to make issues pretty
                             i.putExtra(OBJECT_URL_FOR_DESC, "url");
+                            i.putExtra(OBJECT_TITLE_TO_SET, title);
                             v.getContext().startActivity(i);
                         }
                     });
