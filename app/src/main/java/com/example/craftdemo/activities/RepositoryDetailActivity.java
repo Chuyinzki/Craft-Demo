@@ -1,5 +1,6 @@
 package com.example.craftdemo.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,8 +10,15 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.craftdemo.MyAdapter;
 import com.example.craftdemo.R;
+import com.example.craftdemo.SingletonRequestQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +27,9 @@ import org.json.JSONObject;
 import java.util.List;
 
 import static com.example.craftdemo.Util.getAllInfoFromJSON;
+import static com.example.craftdemo.activities.MainActivity.OBJECT_URL_FOR_DATA;
+import static com.example.craftdemo.activities.MainActivity.OBJECT_URL_FOR_DESC;
+import static com.example.craftdemo.activities.MainActivity.OBJECT_URL_FOR_KEY;
 
 public class RepositoryDetailActivity extends AppCompatActivity {
 
@@ -72,6 +83,32 @@ public class RepositoryDetailActivity extends AppCompatActivity {
                                     + pair.second.toString());
                 }
                 layout.addView(view);
+
+                if (pair.first.equals("issues_url")) {
+                    View view2 = getLayoutInflater().inflate(R.layout.property_item, null);
+                    ((TextView) view2.findViewById(R.id.list_item_name)).setText("Issues");
+                    TextView itemDescription2 = view2.findViewById(R.id.list_item_description);
+                    itemDescription2.setText("Click for more info");
+                    view2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View v) {
+                            final ProgressDialog progressDialog = new ProgressDialog(v.getContext());
+                            progressDialog.setMessage("Loading...");
+                            progressDialog.show();
+                            String url = ((String) pair.second);
+                            url = url.contains("{") ? url.substring(0, url.indexOf('{')) : url;
+
+                            progressDialog.dismiss();
+                            Intent i = new Intent(v.getContext(), MainActivity.class);
+                            i.putExtra(OBJECT_URL_FOR_DATA, url);
+                            i.putExtra(OBJECT_URL_FOR_KEY, "title");
+                            i.putExtra(OBJECT_URL_FOR_DESC, "url");
+                            v.getContext().startActivity(i);
+                        }
+                    });
+                    layout.addView(view2);
+                }
+
             }
         } catch (JSONException e) {
             Log.e(RepositoryDetailActivity.class.getSimpleName(),

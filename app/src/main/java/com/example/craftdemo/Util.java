@@ -9,17 +9,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.example.craftdemo.Constants.GITHUB_API_DESCRIPTION;
-import static com.example.craftdemo.Constants.GITHUB_API_NAME;
-
 public class Util {
 
-    public static Pair<String, String> getNameAndDescriptionFromJSON(JSONObject obj) {
+    public static Pair<String, String> getNameAndDescriptionFromJSON(JSONObject obj, String nameKey,
+                                                                     String descKey) {
         String name = "Error";
         String description = "Error";
         try {
-            name = obj.getString(GITHUB_API_NAME);
-            description = obj.getString(GITHUB_API_DESCRIPTION);
+            name = obj.getString(nameKey);
+            description = obj.getString(descKey);
         } catch (JSONException e) {
             e.printStackTrace();
         }

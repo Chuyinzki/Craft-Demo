@@ -26,8 +26,9 @@ import static com.example.craftdemo.activities.RepositoryDetailActivity.OBJECT_T
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<JSONObject> mDataset;
     private Context context;
+    private final String nameKey;
+    private final String descKey;
 
-    //TODO: Make items look like buttons
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public View linearLayout;
         public MyViewHolder(View v) {
@@ -36,14 +37,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
-    public MyAdapter(Context context, JSONArray myDataset) {
+    public MyAdapter(Context context, JSONArray myDataset, String nameKey, String descKey) {
+        this.nameKey = nameKey;
+        this.descKey = descKey;
         List<JSONObject> toAdd = new ArrayList<>();
-        for(int i = 0; i < myDataset.length(); i++) {
-            try {
-                toAdd.add(myDataset.getJSONObject(i));
-            } catch (JSONException e) {
-                Log.d(MyAdapter.class.getSimpleName(),
-                        "Encountered unexpected value in JSONArray.", e);
+        if(myDataset != null) {
+            for (int i = 0; i < myDataset.length(); i++) {
+                try {
+                    toAdd.add(myDataset.getJSONObject(i));
+                } catch (JSONException e) {
+                    Log.d(MyAdapter.class.getSimpleName(),
+                            "Encountered unexpected value in JSONArray.", e);
+                }
             }
         }
         mDataset = toAdd;
@@ -51,18 +56,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.repository_item, parent, false);
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
+        return new MyViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final JSONObject obj = mDataset.get(position);
-        final Pair<String,String> nameAndDesc = getNameAndDescriptionFromJSON(obj);
+        final Pair<String,String> nameAndDesc = getNameAndDescriptionFromJSON(obj, nameKey, descKey);
         ((TextView)holder.linearLayout.findViewById(R.id.list_item_name)).setText(nameAndDesc.first);
         ((TextView)holder.linearLayout.findViewById(R.id.list_item_description)).setText(nameAndDesc.second);
 

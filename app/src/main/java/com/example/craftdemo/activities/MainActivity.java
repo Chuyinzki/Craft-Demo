@@ -1,86 +1,47 @@
 package com.example.craftdemo.activities;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.craftdemo.MyAdapter;
-import com.example.craftdemo.R;
-import com.example.craftdemo.SingletonRequestQueue;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+public class MainActivity extends AbstractRecyclerActivity {
+
+    public final static String OBJECT_URL_FOR_DATA = "OBJECT_URL_FOR_DATA";
+    public final static String OBJECT_URL_FOR_KEY = "OBJECT_URL_FOR_KEY";
+    public final static String OBJECT_URL_FOR_DESC = "OBJECT_URL_FOR_DESC";
+
     final String INTUIT_REPOS_URL = "https://api.github.com/users/intuit/repos";
+    final String GITHUB_API_NAME = "name";
+    final String GITHUB_API_DESCRIPTION = "description";
+
+    String urlForData = null;
+    String nameKey = null;
+    String descKey = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        urlForData = getIntent().hasExtra(OBJECT_URL_FOR_DATA) ?
+                getIntent().getStringExtra(OBJECT_URL_FOR_DATA) : INTUIT_REPOS_URL;
+        nameKey = getIntent().hasExtra(OBJECT_URL_FOR_KEY) ?
+                getIntent().getStringExtra(OBJECT_URL_FOR_KEY) : GITHUB_API_NAME;
+        descKey = getIntent().hasExtra(OBJECT_URL_FOR_DESC) ?
+                getIntent().getStringExtra(OBJECT_URL_FOR_DESC) : GITHUB_API_DESCRIPTION;
 
-        recyclerView = findViewById(R.id.my_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        getNewData(this);
-
-        final SwipeRefreshLayout refreshLayout = findViewById(R.id.swipe_to_refresh);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getNewData(refreshLayout.getContext());
-                refreshLayout.setRefreshing(false);
-            }
-        });
+        getNewData(this, getDataURL());
     }
 
-    private void getNewData(final Context context) {
-        recyclerView.setAdapter(null);
-        final ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
+    @Override
+    protected String getDataURL() {
+        return urlForData;
+    }
 
-        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest
-                (Request.Method.GET, INTUIT_REPOS_URL, null, new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        mAdapter = new MyAdapter(context, response);
-                        recyclerView.setAdapter(mAdapter);
-                        progressDialog.dismiss();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println();
-                        progressDialog.dismiss();
-                        // TODO: add text to ask user to try again. Consider toast as well.
-                    }
-                });
-        SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    @Override
+    protected MyAdapter getAdapter(Context context, JSONArray myDataset) {
+        return new MyAdapter(context, myDataset, nameKey, descKey);
     }
 }
